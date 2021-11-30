@@ -19,11 +19,13 @@ module stopwatch(
     input clk,
     input setting,
     input reset,
-    input stop,
+    input play,
     input [3:0] n0,
     input [3:0] n1,
     output [3:0] an,
-    output [6:0] sseg
+    output [6:0] sseg,
+    
+//    output [1:0] state
     );
     
 // Module instantiation of 7 Segment Display Decoder
@@ -35,34 +37,39 @@ module stopwatch(
     timeToDisplay c4 (.x(di3[3:0]), .r(in3));
     
 // Module instantiation of timers
+    wire stop;
+    wire clr;
+    
   // ~ UP ~
-    upCount c5 (.setTime({n1,n0}),
-                .stop(stop),
-                .clear(reset),
+    upCount c5 (.clk(clk), .setTime({n1,n0}), .stop(stop), .clr(clr),
                 .di0(di0),
                 .di1(di1),
                 .di2(di2),
-                .di3(di4)
+                .di3(di3)
                 );
   // ~ DOWN ~
-    downCount c6 (.setTime({n1,n0}),
-                .stop(stop),
-                .clear(reset),
-                .di0(di0),
-                .di1(di1),
-                .di2(di2),
-                .di3(di4)
-                );
+    downCount c6 (.clk(clk), .setTime({n1,n0}), .stop(stop), .clr(clr),
+                  .di0(di0),
+                  .di1(di1),
+                  .di2(di2),
+                  .di3(di3)
+                  );
     
 // Module instantiation of controller
     stopwatch_state_machine c7 (
         .clk(clk),
+        .play(play),
+        .reset(reset),
         .in0(in0),
         .in1(in1),
         .in2(in2),
         .in3(in3),
         .an(an),
-        .sseg(sseg)
+        .sseg(sseg),
+        .clr(clr),
+        .stop(stop),
+        
+        .state(state)
      );
 
 endmodule

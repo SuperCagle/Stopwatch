@@ -15,9 +15,10 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module downCount(
+    input clk,
     input setTime,
     input stop,
-    input clear,
+    input clr,
     input di0,
     input di1,
     input di2,
